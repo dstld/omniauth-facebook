@@ -127,6 +127,10 @@ module OmniAuth
       # 1. The request 'code' param (manual callback from standard server-side flow)
       # 2. A signed request from cookie (passed from the client during the client-side flow)
       def with_authorization_code!
+        if request.params.key?('signed_request')
+          request.cookies["fbsr_#{client.id}"] = request.params['signed_request']
+        end
+
         if request.params.key?('code')
           yield
         elsif code_from_signed_request = signed_request_from_cookie && signed_request_from_cookie['code']
